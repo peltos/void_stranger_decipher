@@ -152,6 +152,7 @@ h1 {
   row-gap: 16px;
   flex-wrap: wrap;
   margin-right: 32px;
+  z-index: 5;
 
   .color-button {
     width: 32px;

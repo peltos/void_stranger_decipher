@@ -37,13 +37,18 @@
   <v-btn @click="submitPattern">
     Enter
   </v-btn>
-  <v-btn @click="submitPattern">
+  <v-btn @click="clearPattern" @keydown="preventEnterKey">
     Clear
   </v-btn>
   <p>(you can use the numpad and enter key on your keyboard)</p>
-  <div>
-    <textarea class="cipher-textarea" label="Label" v-model="decipher" disabled></textarea>
-  </div>
+  <section class="cipher-textarea-wrapper">
+    <span>⠇⠀ ⠧⠀ ⠃⠀ ⠅⠆ ⠡⠂ </span>
+    <textarea class="cipher-textarea" label="Label" @keyup="decipherText" v-model="cipher"></textarea>
+  </section>
+  <section class="cipher-textarea-wrapper">
+    <span>INPUT</span>
+    <textarea class="decipher-textarea" label="Label" @keyup="cipherText" v-model="decipher"></textarea>
+  </section>
 </template>
 
 <script setup>
@@ -53,121 +58,225 @@ let pattern = ref([false, false, false,
   false, false,
   false, false, false])
 
+let cipher = ref('')
 let decipher = ref('')
 
 let validPatern = ref(false)
 let validPaternStyle = ref(false)
 
+function preventEnterKey(e) {
+  e.preventDefault();
+}
+
+function cipherText(e) {
+  let textArray = e.target.value.split('')
+  cipher.value = ''
+
+  textArray.forEach(letter => {
+    if(letter === 'a' || letter === 'A') cipher.value = '⠡⠀ '+cipher.value;
+    if(letter === 'b' || letter === 'B') cipher.value = '⠁⠄ '+cipher.value;
+    if(letter === 'c' || letter === 'C') cipher.value = '⠡⠄ '+cipher.value;
+    if(letter === 'd' || letter === 'D') cipher.value = '⠅⠀ '+cipher.value;
+    if(letter === 'e' || letter === 'E') cipher.value = '⠥⠀ '+cipher.value;
+    if(letter === 'f' || letter === 'F') cipher.value = '⠅⠄ '+cipher.value;
+    if(letter === 'g' || letter === 'G') cipher.value = '⠥⠄ '+cipher.value;
+    if(letter === 'h' || letter === 'H') cipher.value = '⠁⠂ '+cipher.value;
+    if(letter === 'i' || letter === 'I') cipher.value = '⠡⠂ '+cipher.value;
+    if(letter === 'j' || letter === 'J') cipher.value = '⠁⠆ '+cipher.value;
+    if(letter === 'k' || letter === 'K') cipher.value = '⠁⠴ '+cipher.value;
+    if(letter === 'l' || letter === 'L') cipher.value = '⠅⠂ '+cipher.value;
+    if(letter === 'm' || letter === 'M') cipher.value = '⠥⠂ '+cipher.value;
+    if(letter === 'n' || letter === 'N') cipher.value = '⠅⠆ '+cipher.value;
+    if(letter === 'o' || letter === 'O') cipher.value = '⠥⠆ '+cipher.value;
+    if(letter === 'p' || letter === 'P') cipher.value = '⠃⠀ '+cipher.value;
+    if(letter === 'q' || letter === 'Q') cipher.value = '⠣⠀ '+cipher.value;
+    if(letter === 'r' || letter === 'R') cipher.value = '⠃⠄ '+cipher.value;
+    if(letter === 's' || letter === 'S') cipher.value = '⠣⠄ '+cipher.value;
+    if(letter === 't' || letter === 'T') cipher.value = '⠇⠀ '+cipher.value;
+    if(letter === 'u' || letter === 'U') cipher.value = '⠧⠀ '+cipher.value;
+    if(letter === 'v' || letter === 'V') cipher.value = '⠇⠄ '+cipher.value;
+    if(letter === 'w' || letter === 'W') cipher.value = '⠧⠄ '+cipher.value;
+    if(letter === 'x' || letter === 'X') cipher.value = '⠃⠂ '+cipher.value;
+    if(letter === 'y' || letter === 'Y') cipher.value = '⠣⠂ '+cipher.value;
+    if(letter === 'z' || letter === 'Z') cipher.value = '⠃⠆ '+cipher.value;
+  });
+}
+
+function decipherText(e) {
+  let textArray = e.target.value.split(' ');
+  let nonGlyphCharacter = false;
+  
+  decipher.value = '';
+
+  if(textArray.length === 1 && textArray[0] === '') return;
+
+  textArray.forEach(glyph => {
+    if(/^[a-zA-Z]*$/.test(glyph) || nonGlyphCharacter) {
+      nonGlyphCharacter = true;
+      return decipher.value = 'There is a non-glyph character in your glyph input. Only use the glyph input for glyph characters'
+    }  
+
+    if(glyph === '⠡⠀') decipher.value = 'A'+decipher.value;
+    if(glyph === '⠁⠄') decipher.value = 'B'+decipher.value;
+    if(glyph === '⠡⠄') decipher.value = 'C'+decipher.value;
+    if(glyph === '⠅⠀') decipher.value = 'D'+decipher.value;
+    if(glyph === '⠥⠀') decipher.value = 'E'+decipher.value;
+    if(glyph === '⠅⠄') decipher.value = 'F'+decipher.value;
+    if(glyph === '⠥⠄') decipher.value = 'G'+decipher.value;
+    if(glyph === '⠁⠂') decipher.value = 'H'+decipher.value;
+    if(glyph === '⠡⠂') decipher.value = 'I'+decipher.value;
+    if(glyph === '⠁⠆') decipher.value = 'J'+decipher.value;
+    if(glyph === '⠁⠴') decipher.value = 'K'+decipher.value;
+    if(glyph === '⠅⠂') decipher.value = 'L'+decipher.value;
+    if(glyph === '⠥⠂') decipher.value = 'M'+decipher.value;
+    if(glyph === '⠅⠆') decipher.value = 'N'+decipher.value;
+    if(glyph === '⠥⠆') decipher.value = 'O'+decipher.value;
+    if(glyph === '⠃⠀') decipher.value = 'P'+decipher.value;
+    if(glyph === '⠣⠀') decipher.value = 'Q'+decipher.value;
+    if(glyph === '⠃⠄') decipher.value = 'R'+decipher.value;
+    if(glyph === '⠣⠄') decipher.value = 'S'+decipher.value;
+    if(glyph === '⠇⠀') decipher.value = 'T'+decipher.value;
+    if(glyph === '⠧⠀') decipher.value = 'U'+decipher.value;
+    if(glyph === '⠇⠄') decipher.value = 'V'+decipher.value;
+    if(glyph === '⠧⠄') decipher.value = 'W'+decipher.value;
+    if(glyph === '⠃⠂') decipher.value = 'X'+decipher.value;
+    if(glyph === '⠣⠂') decipher.value = 'Y'+decipher.value;
+    if(glyph === '⠃⠆') decipher.value = 'Z'+decipher.value;
+  });
+}
+
 function submitPattern() {
+  if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
+    !pattern.value[3] && !pattern.value[4] &&
+    !pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'A', cipher.value = '⠡⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'A', validPatern.value = true
+    !pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'B', cipher.value = '⠁⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'B', validPatern.value = true
+    !pattern.value[5] && pattern.value[6] && pattern.value[7])
+    decipher.value += 'C', cipher.value = '⠡⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && pattern.value[7]) decipher.value += 'C', validPatern.value = true
+    pattern.value[5] && !pattern.value[6] && !pattern.value[7])
+    decipher.value += 'D', cipher.value = '⠅⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && !pattern.value[6] && !pattern.value[7]) decipher.value += 'D', validPatern.value = true
+    pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'E', cipher.value = '⠥⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'E', validPatern.value = true
+    pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'F', cipher.value = '⠅⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'F', validPatern.value = true
-
-  if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
-    !pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && pattern.value[6] && pattern.value[7]) decipher.value += 'G', validPatern.value = true
+    pattern.value[5] && pattern.value[6] && pattern.value[7])
+    decipher.value += 'G', cipher.value = '⠥⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && !pattern.value[7]) decipher.value += 'H', validPatern.value = true
+    !pattern.value[5] && !pattern.value[6] && !pattern.value[7])
+    decipher.value += 'H', cipher.value = '⠁⠂ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'I', validPatern.value = true
+    !pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'I', cipher.value = '⠡⠂ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'J', validPatern.value = true
+    !pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'J', cipher.value = '⠁⠆ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && pattern.value[7]) decipher.value += 'K', validPatern.value = true
+    !pattern.value[5] && pattern.value[6] && pattern.value[7])
+    decipher.value += 'K', cipher.value = '⠁⠴ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    pattern.value[5] && !pattern.value[6] && !pattern.value[7]) decipher.value += 'L', validPatern.value = true
+    pattern.value[5] && !pattern.value[6] && !pattern.value[7])
+    decipher.value += 'L', cipher.value = '⠅⠂ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'M', validPatern.value = true
+    pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'M', cipher.value = '⠥⠂ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'N', validPatern.value = true
+    pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'N', cipher.value = '⠅⠆ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     !pattern.value[3] && pattern.value[4] &&
-    pattern.value[5] && pattern.value[6] && pattern.value[7]) decipher.value += 'O', validPatern.value = true
+    pattern.value[5] && pattern.value[6] && pattern.value[7])
+    decipher.value += 'O', cipher.value = '⠥⠆ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && !pattern.value[7]) decipher.value += 'P', validPatern.value = true
+    !pattern.value[5] && !pattern.value[6] && !pattern.value[7])
+    decipher.value += 'P', cipher.value = '⠃⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'Q', validPatern.value = true
+    !pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'Q', cipher.value = '⠣⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'R', validPatern.value = true
+    !pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'R', cipher.value = '⠃⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && pattern.value[7]) decipher.value += 'S', validPatern.value = true
+    !pattern.value[5] && pattern.value[6] && pattern.value[7])
+    decipher.value += 'S', cipher.value = '⠣⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && !pattern.value[6] && !pattern.value[7]) decipher.value += 'T', validPatern.value = true
+    pattern.value[5] && !pattern.value[6] && !pattern.value[7])
+    decipher.value += 'T', cipher.value = '⠇⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'U', validPatern.value = true
+    pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'U', cipher.value = '⠧⠀ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'V', validPatern.value = true
+    pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'V', cipher.value = '⠇⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && !pattern.value[4] &&
-    pattern.value[5] && pattern.value[6] && pattern.value[7]) decipher.value += 'W', validPatern.value = true
+    pattern.value[5] && pattern.value[6] && pattern.value[7])
+    decipher.value += 'W', cipher.value = '⠧⠄ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && !pattern.value[7]) decipher.value += 'X', validPatern.value = true
+    !pattern.value[5] && !pattern.value[6] && !pattern.value[7])
+    decipher.value += 'X', cipher.value = '⠃⠂ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && pattern.value[6] && !pattern.value[7]) decipher.value += 'Y', validPatern.value = true
+    !pattern.value[5] && pattern.value[6] && !pattern.value[7])
+    decipher.value += 'Y', cipher.value = '⠣⠂ '+cipher.value, validPatern.value = true
 
   if (pattern.value[0] && !pattern.value[1] && !pattern.value[2] &&
     pattern.value[3] && pattern.value[4] &&
-    !pattern.value[5] && !pattern.value[6] && pattern.value[7]) decipher.value += 'Z', validPatern.value = true
-
-
+    !pattern.value[5] && !pattern.value[6] && pattern.value[7])
+    decipher.value += 'Z', cipher.value = '⠃⠆ '+cipher.value, validPatern.value = true
 
   if (!validPatern.value) {
-    console.log(validPatern);
     validPaternStyle.value = true;
     setTimeout(() => {
       validPaternStyle.value = false;
@@ -178,6 +287,14 @@ function submitPattern() {
   pattern.value = [false, false, false,
     false, false,
     false, false, false]
+}
+
+function clearPattern() {
+  pattern.value = [false, false, false,
+    false, false,
+    false, false, false];
+  cipher.value = '';
+  decipher.value = '';
 }
 
 window.addEventListener('keydown', (e) => {
@@ -303,11 +420,35 @@ window.addEventListener('keydown', (e) => {
   }
 }
 
+section.cipher-textarea-wrapper {
+  position: relative;
+
+  &:first-of-type span {
+    font-size: 10px;
+  }
+
+  span {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    font-size: 14px;
+  }
+}
+
 .cipher-textarea {
+  font-size: 32px !important;
+}
+
+.decipher-textarea {
+  font-size: 48px !important;
+}
+
+.cipher-textarea,
+.decipher-textarea {
   background-color: var(--selected-color-black);
   padding: 20px;
   color: white;
   width: 100%;
-  font-size: 48px !important;
+
 }
 </style>
